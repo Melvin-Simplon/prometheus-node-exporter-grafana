@@ -1,0 +1,29 @@
+services:
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    volumes:
+      - prometheus_data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+    restart: unless-stopped
+
+  node-exporter:
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:9100/metrics" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    container_name: node-exporter
+    image: prom/node-exporter:v1.9.0
+    command:
+      - "--path.rootfs=/host"
+    volumes:
+      - "/:/host:ro,rslave"
+    pid: host
+    restart: unless-stopped
+
+volumes:
+  prometheus_data:
+
