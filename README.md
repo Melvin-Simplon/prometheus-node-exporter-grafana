@@ -1,7 +1,7 @@
 <br/>
 
 <p align="center">
-  <img src="https://skillicons.dev/icons?i=prometheus,grafana,docker,linux&perline=4" alt="Prometheus, Grafana, Docker, Linux" />
+  <img src="https://skillicons.dev/icons?i=prometheus,grafana,docker&perline=3" alt="Prometheus, Grafana, Docker" />
 </p>
 
 <h1 align="center">Host Monitoring with Prometheus</h1>
