@@ -343,13 +343,13 @@
       "id": 8,
       "type": "bargauge",
       "title": "Filesystem usage",
-      "description": "Real filesystems only. Magnitude across a handful of named things, so bars rather than a line.",
+      "description": "Real filesystems only: snap's fuse.snapfuse images and WSL's 9p Windows mounts are excluded, since both sit at a fixed percentage forever.",
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
       "targets": [
         {
           "refId": "A",
-          "expr": "100 * (1 - node_filesystem_avail_bytes{instance=\"$instance\",fstype!~\"tmpfs|overlay|squashfs|ramfs\"} / node_filesystem_size_bytes{instance=\"$instance\",fstype!~\"tmpfs|overlay|squashfs|ramfs\"})",
+          "expr": "100 * (1 - node_filesystem_avail_bytes{instance=\"$instance\",fstype=~\"ext4|ext3|xfs|btrfs\",mountpoint!~\"/snap.*|/var/lib/docker.*|/mnt/.*\"} / node_filesystem_size_bytes{instance=\"$instance\",fstype=~\"ext4|ext3|xfs|btrfs\",mountpoint!~\"/snap.*|/var/lib/docker.*|/mnt/.*\"})",
           "legendFormat": "{{mountpoint}}",
           "instant": true
         }

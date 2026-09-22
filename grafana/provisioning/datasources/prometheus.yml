@@ -1,6 +1,12 @@
 # Data source as code: recreated on every start, no manual clicking.
 apiVersion: 1
 
+# Clear any stale entry of the same name first: a hand-made data source
+# keeps its random uid and blocks this one from taking the fixed uid.
+deleteDatasources:
+  - name: Prometheus
+    orgId: 1
+
 datasources:
   - name: Prometheus
     type: prometheus
