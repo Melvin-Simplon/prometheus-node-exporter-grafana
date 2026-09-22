@@ -43,7 +43,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "100 - (avg(irate(node_cpu_seconds_total{instance=\"$instance\",mode=\"idle\"}[5m])) * 100)",
+          "expr": "100 - (avg(irate(node_cpu_seconds_total{instance=\"$instance\",replica=\"\",mode=\"idle\"}[5m])) * 100)",
           "legendFormat": "CPU busy"
         }
       ],
@@ -82,7 +82,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "100 * (1 - node_memory_MemAvailable_bytes{instance=\"$instance\"} / node_memory_MemTotal_bytes{instance=\"$instance\"})",
+          "expr": "100 * (1 - node_memory_MemAvailable_bytes{instance=\"$instance\",replica=\"\"} / node_memory_MemTotal_bytes{instance=\"$instance\",replica=\"\"})",
           "legendFormat": "Memory used"
         }
       ],
@@ -121,7 +121,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "100 * (1 - node_filesystem_avail_bytes{instance=\"$instance\",mountpoint=\"/\"} / node_filesystem_size_bytes{instance=\"$instance\",mountpoint=\"/\"})",
+          "expr": "100 * (1 - node_filesystem_avail_bytes{instance=\"$instance\",replica=\"\",mountpoint=\"/\"} / node_filesystem_size_bytes{instance=\"$instance\",replica=\"\",mountpoint=\"/\"})",
           "legendFormat": "Root used"
         }
       ],
@@ -160,7 +160,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "node_time_seconds{instance=\"$instance\"} - node_boot_time_seconds{instance=\"$instance\"}",
+          "expr": "node_time_seconds{instance=\"$instance\",replica=\"\"} - node_boot_time_seconds{instance=\"$instance\",replica=\"\"}",
           "legendFormat": "Uptime"
         }
       ],
@@ -200,7 +200,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "100 - (avg(irate(node_cpu_seconds_total{instance=\"$instance\",mode=\"idle\"}[5m])) * 100)",
+          "expr": "100 - (avg(irate(node_cpu_seconds_total{instance=\"$instance\",replica=\"\",mode=\"idle\"}[5m])) * 100)",
           "legendFormat": "CPU busy"
         }
       ],
@@ -241,12 +241,12 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "node_memory_MemTotal_bytes{instance=\"$instance\"} - node_memory_MemAvailable_bytes{instance=\"$instance\"}",
+          "expr": "node_memory_MemTotal_bytes{instance=\"$instance\",replica=\"\"} - node_memory_MemAvailable_bytes{instance=\"$instance\",replica=\"\"}",
           "legendFormat": "Used"
         },
         {
           "refId": "B",
-          "expr": "node_memory_Cached_bytes{instance=\"$instance\"}",
+          "expr": "node_memory_Cached_bytes{instance=\"$instance\",replica=\"\"}",
           "legendFormat": "Cached"
         }
       ],
@@ -295,12 +295,12 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(rate(node_network_receive_bytes_total{instance=\"$instance\",device!~\"lo|veth.*|docker.*|br-.*\"}[5m]))",
+          "expr": "sum(rate(node_network_receive_bytes_total{instance=\"$instance\",replica=\"\",device!~\"lo|veth.*|docker.*|br-.*\"}[5m]))",
           "legendFormat": "Received"
         },
         {
           "refId": "B",
-          "expr": "sum(rate(node_network_transmit_bytes_total{instance=\"$instance\",device!~\"lo|veth.*|docker.*|br-.*\"}[5m]))",
+          "expr": "sum(rate(node_network_transmit_bytes_total{instance=\"$instance\",replica=\"\",device!~\"lo|veth.*|docker.*|br-.*\"}[5m]))",
           "legendFormat": "Transmitted"
         }
       ],
@@ -349,7 +349,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "100 * (1 - node_filesystem_avail_bytes{instance=\"$instance\",fstype=~\"ext4|ext3|xfs|btrfs\",mountpoint!~\"/snap.*|/var/lib/docker.*|/mnt/.*\"} / node_filesystem_size_bytes{instance=\"$instance\",fstype=~\"ext4|ext3|xfs|btrfs\",mountpoint!~\"/snap.*|/var/lib/docker.*|/mnt/.*\"})",
+          "expr": "100 * (1 - node_filesystem_avail_bytes{instance=\"$instance\",replica=\"\",fstype=~\"ext4|ext3|xfs|btrfs\",mountpoint!~\"/snap.*|/var/lib/docker.*|/mnt/.*\"} / node_filesystem_size_bytes{instance=\"$instance\",replica=\"\",fstype=~\"ext4|ext3|xfs|btrfs\",mountpoint!~\"/snap.*|/var/lib/docker.*|/mnt/.*\"})",
           "legendFormat": "{{mountpoint}}",
           "instant": true
         }
@@ -389,12 +389,12 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(rate(node_disk_read_bytes_total{instance=\"$instance\"}[5m]))",
+          "expr": "sum(rate(node_disk_read_bytes_total{instance=\"$instance\",replica=\"\"}[5m]))",
           "legendFormat": "Read"
         },
         {
           "refId": "B",
-          "expr": "sum(rate(node_disk_written_bytes_total{instance=\"$instance\"}[5m]))",
+          "expr": "sum(rate(node_disk_written_bytes_total{instance=\"$instance\",replica=\"\"}[5m]))",
           "legendFormat": "Written"
         }
       ],

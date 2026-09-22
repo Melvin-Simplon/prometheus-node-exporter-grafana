@@ -1,5 +1,5 @@
 services:
-  prometheus:
+  prometheus-server:
     healthcheck:
       test: [ "CMD", "promtool", "check", "ready", "--url", "http://localhost:9090" ]
       interval: 10s
@@ -7,6 +7,11 @@ services:
       retries: 3
       start_period: 5s
     image: prom/prometheus:v3.5.0
+    container_name: prometheus-server
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-remote-write-receiver"
     volumes:
       - prometheus_data:/prometheus
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
@@ -33,13 +38,13 @@ services:
     ports:
       - 3000:3000
     depends_on:
-      prometheus:
+      prometheus-server:
         condition: service_healthy
     restart: unless-stopped
 
   node-exporter:
     healthcheck:
-      test: [ "CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:9100/metrics" ]
+      test: [ "CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:9100/" ]
       interval: 10s
       timeout: 3s
       retries: 3
@@ -51,6 +56,28 @@ services:
     volumes:
       - "/:/host:ro,rslave"
     pid: host
+    restart: unless-stopped
+
+  prometheus-agent:
+    healthcheck:
+      test: [ "CMD", "promtool", "check", "ready", "--url", "http://localhost:9090" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    image: prom/prometheus:v3.5.0
+    container_name: prometheus-agent
+    command:
+      - "--agent"
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.agent.path=/tmp/prometheus-agent"
+    volumes:
+      - ./prometheus-agent.yml:/etc/prometheus/prometheus.yml:ro
+    tmpfs:
+      - /tmp/prometheus-agent
+    depends_on:
+      prometheus-server:
+        condition: service_healthy
     restart: unless-stopped
 
 volumes:
