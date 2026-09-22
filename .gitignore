@@ -1,0 +1,19 @@
+# Secrets and local overrides
+.env
+.env.*
+!.env.example
+docker-compose.override.yml
+
+# Data, if ever bind-mounted instead of using named volumes
+data/
+prometheus-data/
+grafana-data/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
