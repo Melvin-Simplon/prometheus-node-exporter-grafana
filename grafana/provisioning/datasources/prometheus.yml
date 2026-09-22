@@ -1,8 +1,5 @@
-# Data source as code: recreated on every start, no manual clicking.
 apiVersion: 1
 
-# Clear any stale entry of the same name first: a hand-made data source
-# keeps its random uid and blocks this one from taking the fixed uid.
 deleteDatasources:
   - name: Prometheus
     orgId: 1
@@ -12,9 +9,7 @@ datasources:
     type: prometheus
     uid: prometheus
     access: proxy
-    # Service name on the compose network, not localhost:
-    # inside this container, localhost is Grafana itself.
-    url: http://prometheus:9090
+    url: http://prometheus-server:9090
     isDefault: true
     jsonData:
       timeInterval: 5s

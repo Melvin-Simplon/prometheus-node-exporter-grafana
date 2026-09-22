@@ -41,13 +41,14 @@ The consequence is that an exporter is trivial: a process that answers `GET /met
 
 ## The stack
 
-Three containers on one Compose network, defined in [`docker-compose.yml`](docker-compose.yml).
+Four containers on one Compose network, defined in [`docker-compose.yml`](docker-compose.yml).
 
 | Service | Port | Role |
 | --- | --- | --- |
-| `prometheus` | 9090 | Scrapes the targets, stores the series, answers PromQL |
+| `prometheus-server` | 9090 | Scrapes the targets, stores the series, answers PromQL |
 | `node-exporter` | not published | Reads the host and exposes it as metrics |
 | `grafana` | 3000 | Reads Prometheus and draws it |
+| `prometheus-agent` | not published | Scrapes the same target and forwards it, keeping nothing; see the [bonus](#bonus-a-stateless-second-prometheus) |
 
 `node-exporter` publishes no port on the host. Prometheus reaches it over the internal network by its service name, so nothing about the machine is exposed outside Docker.
 
@@ -148,7 +149,7 @@ Nothing here is clicked. [`grafana/provisioning/`](grafana/provisioning) declare
 
 | Field | Value |
 | --- | --- |
-| Prometheus server URL | `http://prometheus:9090` |
+| Prometheus server URL | `http://prometheus-server:9090` |
 | Scrape interval | `5s` |
 
 The URL is the one thing that catches people out. Inside the Grafana container, `localhost` is Grafana, so the service name is what resolves.
@@ -164,6 +165,36 @@ The `Host` variable is filled from the labels Prometheus attached at scrape time
 </p>
 
 Importing one is the other route: [KDS Linux Hosts](https://grafana.com/grafana/dashboards/10180-kds-linux-hosts/) (ID `10180`) reads the same data source and covers far more panels, at the cost of showing whatever its author thought mattered.
+
+<br/>
+
+---
+
+<br/>
+
+## Bonus: a stateless second Prometheus
+
+Picture a machine on a network the main Prometheus cannot reach. It cannot be scraped from here, so a second Prometheus sits next to it, collects locally, and forwards what it collected to the one that can be queried. Nothing is pulled across that boundary; everything is pushed.
+
+`prometheus-server` is the only piece that keeps data. `prometheus-agent` runs Prometheus in agent mode (`--agent`): no local database, no PromQL, no query API, just a write-ahead log that drains toward its `remote_write` target and is thrown away. Its storage path is a `tmpfs` mount, so that log lives in RAM and nothing it collects ever touches disk.
+
+Two settings make the push possible:
+
+- `prometheus-server` is started with `--web.enable-remote-write-receiver`, which is off by default and opens `/api/v1/write`.
+- [`prometheus-agent.yml`](prometheus-agent.yml) scrapes the same `node-exporter` target and points `remote_write` at that address.
+
+Both Prometheus instances end up scraping the same exporter, which would collide: two identical series landing on the same timestamps. `prometheus-agent.yml` tags everything it forwards with `external_labels: { replica: agent }`, so the two paths stay distinct series on arrival instead of overwriting each other. The dashboard queries filter on `replica=""` for that reason, to read only what `prometheus-server` scraped directly; without it, `sum()` panels such as network and disk throughput silently double their numbers by adding the agent's copy on top.
+
+<p align="center">
+  <img src="docs/images/docker-ps-agent.png" width="760" alt="docker ps showing prometheus-agent alongside prometheus-server, both healthy" />
+</p>
+
+Querying `up` on `prometheus-server` shows both paths for the same exporter, one plain and one carrying the tag:
+
+```
+up{instance="node-exporter:9100", job="node-exporter"}
+up{instance="node-exporter:9100", job="node-exporter", replica="agent"}
+```
 
 <br/>
 
