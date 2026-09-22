@@ -1,11 +1,38 @@
 services:
   prometheus:
+    healthcheck:
+      test: [ "CMD", "promtool", "check", "ready", "--url", "http://localhost:9090" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
     image: prom/prometheus:v3.5.0
     volumes:
       - prometheus_data:/prometheus
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - 9090:9090
+    restart: unless-stopped
+
+  grafana:
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/api/health" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    image: grafana/grafana:12.1.0
+    container_name: grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?set GRAFANA_ADMIN_PASSWORD in .env}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    ports:
+      - 3000:3000
+    depends_on:
+      prometheus:
+        condition: service_healthy
     restart: unless-stopped
 
   node-exporter:
@@ -26,4 +53,5 @@ services:
 
 volumes:
   prometheus_data:
+  grafana_data:
 
