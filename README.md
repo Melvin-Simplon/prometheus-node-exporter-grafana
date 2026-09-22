@@ -153,7 +153,11 @@ Add the data source under `Connections > Data sources > Prometheus`:
 
 The URL is the one thing that catches people out. Inside the Grafana container, `localhost` is Grafana, so the service name is what resolves.
 
-From there, `Node Exporter Full` (dashboard ID `1860`) imports a full host view off this single data source.
+From there, [KDS Linux Hosts](https://grafana.com/grafana/dashboards/10180-kds-linux-hosts/) (dashboard ID `10180`) imports a full host view off this single data source. Its `Host` and `Job` variables are filled from the labels Prometheus attached at scrape time, which is why one dashboard covers any number of machines without being edited.
+
+<p align="center">
+  <img src="docs/images/grafana-dashboard.png" width="760" alt="KDS Linux Hosts dashboard in Grafana" />
+</p>
 
 <br/>
 
