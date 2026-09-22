@@ -144,7 +144,7 @@ Filesystem queries need their mount point pinned. Under WSL the host disk appear
 
 ## Grafana
 
-Add the data source under `Connections > Data sources > Prometheus`:
+Nothing here is clicked. [`grafana/provisioning/`](grafana/provisioning) declares the data source and the dashboard folder, so both are rebuilt on every start and survive a `down`:
 
 | Field | Value |
 | --- | --- |
@@ -153,7 +153,21 @@ Add the data source under `Connections > Data sources > Prometheus`:
 
 The URL is the one thing that catches people out. Inside the Grafana container, `localhost` is Grafana, so the service name is what resolves.
 
-From there, [KDS Linux Hosts](https://grafana.com/grafana/dashboards/10180-kds-linux-hosts/) (dashboard ID `10180`) imports a full host view off this single data source. Its `Host` and `Job` variables are filled from the labels Prometheus attached at scrape time, which is why one dashboard covers any number of machines without being edited.
+### Host Overview
+
+[`grafana/dashboards/host-overview.json`](grafana/dashboards/host-overview.json) is the dashboard built for this repository: four headline numbers with thresholds, then the series behind them.
+
+Its colors are not a matter of taste. Two categorical hues carry the series, the status three are reserved for thresholds and never reused, and the set was checked against Grafana's dark surface for lightness, chroma, contrast and colorblind separation before being written into the file.
+
+The `Host` variable is filled from the labels Prometheus attached at scrape time, which is why one dashboard covers any number of machines without being edited.
+
+<p align="center">
+  <img src="docs/images/grafana-host-overview.png" width="760" alt="Host Overview dashboard in Grafana" />
+</p>
+
+### Importing one instead
+
+A community dashboard reads the same data source without any of the work. [KDS Linux Hosts](https://grafana.com/grafana/dashboards/10180-kds-linux-hosts/) (ID `10180`) covers far more panels than the one above, at the cost of showing whatever its author thought mattered.
 
 <p align="center">
   <img src="docs/images/grafana-dashboard.png" width="760" alt="KDS Linux Hosts dashboard in Grafana" />
