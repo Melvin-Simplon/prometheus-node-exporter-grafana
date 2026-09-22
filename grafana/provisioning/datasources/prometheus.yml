@@ -1,0 +1,15 @@
+# Data source as code: recreated on every start, no manual clicking.
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    uid: prometheus
+    access: proxy
+    # Service name on the compose network, not localhost:
+    # inside this container, localhost is Grafana itself.
+    url: http://prometheus:9090
+    isDefault: true
+    jsonData:
+      timeInterval: 5s
+      httpMethod: POST

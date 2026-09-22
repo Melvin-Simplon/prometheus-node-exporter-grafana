@@ -28,6 +28,8 @@ services:
       GF_USERS_ALLOW_SIGN_UP: "false"
     volumes:
       - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
     ports:
       - 3000:3000
     depends_on:
@@ -54,4 +56,3 @@ services:
 volumes:
   prometheus_data:
   grafana_data:
-
